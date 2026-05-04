@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Project Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  </head>
+
+  <body class="bg-light">
+    <nav class="navbar bg-white shadow-sm px-4 mb-4">
+      <span class="navbar-brand fw-bold">🏗️ Project Dashboard</span>
+      <a href="{% url 'logout' %}" class="btn btn-danger btn-sm">Logout</a>
+    </nav>
+
+    <div class="container">
+      <!-- STATS -->
+      <div class="row text-center mb-4">
+        <div class="col-md-4">
+          <div class="card p-3 shadow-sm">
+            <h6>Total Projects</h6>
+            <h4>{{ total_projects }}</h4>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card p-3 shadow-sm">
+            <h6>Active</h6>
+            <h4>{{ active_projects }}</h4>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card p-3 shadow-sm">
+            <h6>Completed</h6>
+            <h4>{{ completed_projects }}</h4>
+          </div>
+        </div>
+      </div>
+
+      <!-- ADD PROJECT -->
+      <div class="card p-4 mb-4">
+        <h5>Add Project</h5>
+        <form method="POST" action="{% url 'add_project' %}">
+          {% csrf_token %}
+          <input class="form-control mb-2" name="name" placeholder="Project Name" />
+          <input class="form-control mb-2" name="location" placeholder="Location" />
+          <input class="form-control mb-2" type="date" name="start_date" placeholder="Project Start date" />
+          <input class="form-control mb-2" type="date" name="end_date" />
+          <select class="form-control mb-2" name="status">
+            <option value="planning">Planning</option>
+            <option value="ongoing">Ongoing</option>
+            <option value="completed">Completed</option>
+          </select>
+          <button class="btn btn-primary">Add Project</button>
+        </form>
+      </div>
+
+      <!-- PROJECT LIST -->
+      <div class="card p-4">
+        <h5>Projects</h5>
+
+        <table class="table table-hover">
+          <tr>
+            <th>Name</th>
+            <th>Location</th>
+            <th>Status</th>
+            <th>Progress</th>
+            <th>Action</th>
+          </tr>
+
+          {% for item in project_data %}
+            <tr>
+              <td>{{ item.project.name }}</td>
+              <td>{{ item.project.location }}</td>
+              <td>{{ item.project.get_status_display }}</td>
+
+              <td>
+                <div class="progress">
+                  <div class="progress-bar" style="width: {{ item.progress }}%">{{ item.progress }}%</div>
+                </div>
+              </td>
+
+              <td>
+                <a href="{% url 'project_detail' item.project.id %}" class="btn btn-sm btn-primary">View</a>
+              </td>
+            </tr>
+          {% endfor %}
+        </table>
+      </div>
+    </div>
+  </body>
+</html>
