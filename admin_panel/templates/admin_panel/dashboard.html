@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Admin Dashboard - Creative Advs</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
+
+    <style>
+      body {
+        background-color: #f5f7fa;
+        font-family: 'Segoe UI', sans-serif;
+      }
+      
+      .navbar {
+        background: white;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      }
+      
+      .navbar-brand {
+        font-weight: bold;
+        color: #333 !important;
+      }
+      
+      .card {
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      }
+      
+      .section-title {
+        font-weight: 600;
+        margin-bottom: 15px;
+        color: #333;
+      }
+      
+      .btn-primary,
+      .btn-success,
+      .btn-warning {
+        border-radius: 8px;
+      }
+      
+      table th {
+        background: #f1f3f5;
+      }
+      
+      .badge-status {
+        padding: 5px 10px;
+        border-radius: 8px;
+        font-size: 12px;
+      }
+      
+      .present {
+        background: #d4edda;
+        color: #155724;
+      }
+      .absent {
+        background: #f8d7da;
+        color: #721c24;
+      }
+      
+      .paid {
+        background: #d4edda;
+        color: #155724;
+      }
+      .pending {
+        background: #fff3cd;
+        color: #856404;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg px-4 mb-4">
+      <span class="navbar-brand">🏗️ Creative Advs Admin</span>
+      <div class="ms-auto">
+        <a href="{% url 'logout' %}" class="btn btn-danger btn-sm">Logout</a>
+      </div>
+    </nav>
+
+    <div class="container">
+      <!-- HEADER -->
+      <div class="mb-4">
+        <h3>Dashboard Overview</h3>
+        <p class="text-muted">Manage workforce, expenses and payroll</p>
+      </div>
+
+      <!-- DAILY TASK -->
+      <div class="card p-4 mb-4">
+        <h5 class="section-title"><i class="bi bi-person-check"></i> Daily Attendance</h5>
+
+        <form method="POST" action="{% url 'add_daily' %}" class="row g-2 mb-3">
+          {% csrf_token %}
+          <div class="col-md-4">
+            <input type="text" name="employee_name" class="form-control" placeholder="Employee Name" required />
+          </div>
+          <div class="col-md-3 d-flex align-items-center">
+            <input type="checkbox" name="present" class="me-2" />Present
+          </div>
+          <div class="col-md-3">
+            <button class="btn btn-success w-100">Add</button>
+          </div>
+        </form>
+
+        <table class="table table-hover">
+          <tr>
+            <th>Name</th>
+            <th>Status</th>
+            <th>Date</th>
+          </tr>
+
+          {% for d in daily %}
+            <tr>
+              <td>{{ d.employee_name }}</td>
+              <td>
+                {% if d.present %}
+                  <span class="badge-status present">Present</span>
+                {% else %}
+                  <span class="badge-status absent">Absent</span>
+                {% endif %}
+              </td>
+              <td>{{ d.date }}</td>
+            </tr>
+          {% endfor %}
+        </table>
+      </div>
+
+      <!-- WEEKLY -->
+      <div class="card p-4 mb-4">
+        <h5 class="section-title"><i class="bi bi-truck"></i> Weekly Expenses</h5>
+
+        <form method="POST" action="{% url 'add_weekly' %}" class="row g-2 mb-3">
+          {% csrf_token %}
+          <div class="col-md-3">
+            <input class="form-control" name="title" placeholder="Type" />
+          </div>
+          <div class="col-md-3">
+            <input class="form-control" name="person_name" placeholder="Name" />
+          </div>
+          <div class="col-md-2">
+            <input class="form-control" name="amount" placeholder="Amount" />
+          </div>
+          <div class="col-md-3">
+            <input class="form-control" name="description" placeholder="Description" />
+          </div>
+          <div class="col-md-1">
+            <button class="btn btn-primary w-100">+</button>
+          </div>
+        </form>
+
+        <table class="table table-hover">
+          <tr>
+            <th>Type</th>
+            <th>Name</th>
+            <th>Amount</th>
+            <th>Date</th>
+          </tr>
+
+          {% for w in weekly %}
+            <tr>
+              <td>{{ w.title }}</td>
+              <td>{{ w.person_name }}</td>
+              <td>₹ {{ w.amount }}</td>
+              <td>{{ w.date }}</td>
+            </tr>
+          {% endfor %}
+        </table>
+      </div>
+
+      <!-- MONTHLY -->
+      <div class="card p-4">
+        <h5 class="section-title"><i class="bi bi-wallet2"></i> Monthly Salary</h5>
+
+        <form method="POST" action="{% url 'add_monthly' %}" class="row g-2 mb-3">
+          {% csrf_token %}
+          <div class="col-md-3">
+            <input class="form-control" name="employee_name" placeholder="Employee" />
+          </div>
+          <div class="col-md-3">
+            <input class="form-control" name="salary" placeholder="Salary" />
+          </div>
+          <div class="col-md-3">
+            <input class="form-control" name="month" placeholder="Month" />
+          </div>
+          <div class="col-md-2 d-flex align-items-center">
+            <input type="checkbox" name="paid" class="me-2" />Paid
+          </div>
+          <div class="col-md-1">
+            <button class="btn btn-warning w-100">+</button>
+          </div>
+        </form>
+
+        <table class="table table-hover">
+          <tr>
+            <th>Name</th>
+            <th>Salary</th>
+            <th>Month</th>
+            <th>Status</th>
+          </tr>
+
+          {% for m in monthly %}
+            <tr>
+              <td>{{ m.employee_name }}</td>
+              <td>₹ {{ m.salary }}</td>
+              <td>{{ m.month }}</td>
+              <td>
+                {% if m.paid %}
+                  <span class="badge-status paid">Paid</span>
+                {% else %}
+                  <span class="badge-status pending">Pending</span>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </table>
+      </div>
+    </div>
+  </body>
+</html>

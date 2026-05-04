@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Project Detail</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-light">
+
+<nav class="navbar bg-white shadow-sm px-4 mb-4">
+  <span class="navbar-brand fw-bold">🏗️ Project Details</span>
+  <a href="{% url 'project_dashboard' %}" class="btn btn-secondary btn-sm">Back</a>
+</nav>
+
+<div class="container">
+
+  <!-- PROJECT INFO -->
+  <div class="card p-4 mb-4">
+    <h4>{{ project.name }}</h4>
+    <p class="text-muted">{{ project.location }}</p>
+
+    <div class="row">
+      <div class="col-md-3">
+        <strong>Status:</strong> {{ project.get_status_display }}
+      </div>
+      <div class="col-md-3">
+        <strong>Start:</strong> {{ project.start_date }}
+      </div>
+      <div class="col-md-3">
+        <strong>End:</strong> {{ project.end_date }}
+      </div>
+    </div>
+  </div>
+
+  <!-- ADD TASK -->
+  <div class="card p-4 mb-4">
+    <h5>Add Task</h5>
+
+    <form method="POST" action="{% url 'add_task' project.id %}">
+      {% csrf_token %}
+      <div class="row g-2">
+        <div class="col-md-10">
+          <input type="text" name="title" class="form-control" placeholder="Task Name (e.g. Foundation, Plumbing)" required>
+        </div>
+        <div class="col-md-2">
+          <button class="btn btn-primary w-100">Add</button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- TASK LIST -->
+  <div class="card p-4">
+    <h5>Tasks</h5>
+
+    <table class="table table-hover align-middle">
+      <tr>
+        <th>Task</th>
+        <th>Status</th>
+        <th>Update</th>
+      </tr>
+
+      {% for t in tasks %}
+      <tr>
+        <td>{{ t.title }}</td>
+
+        <td>
+          {% if t.status == 'completed' %}
+            <span class="badge bg-success">Completed</span>
+          {% elif t.status == 'ongoing' %}
+            <span class="badge bg-warning text-dark">Ongoing</span>
+          {% else %}
+            <span class="badge bg-secondary">Pending</span>
+          {% endif %}
+        </td>
+
+        <td>
+          <form method="POST" action="{% url 'update_task' t.id %}">
+            {% csrf_token %}
+            <div class="d-flex gap-2">
+
+              <select name="status" class="form-select form-select-sm">
+                <option value="pending" {% if t.status == 'pending' %}selected{% endif %}>Pending</option>
+                <option value="ongoing" {% if t.status == 'ongoing' %}selected{% endif %}>Ongoing</option>
+                <option value="completed" {% if t.status == 'completed' %}selected{% endif %}>Completed</option>
+              </select>
+
+              <button class="btn btn-sm btn-success">Save</button>
+
+            </div>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+
+    </table>
+
+  </div>
+
+</div>
+
+</body>
+</html>
